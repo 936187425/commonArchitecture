@@ -9,16 +9,16 @@
 #### 为啥要使用线程池
 >如下图，假设有这么一个场景，**客户的系统每次调用你的系统接口的时候，你拿到消息直接就开一个线程去处理消息。**
 
-![8499885827e2f83d132241626812ce00.png](assets/threadPoolPic/1.png)
+![8499885827e2f83d132241626812ce00.png](/assets/threadPoolPic/1.png)
 >但是，**有一天，遇到高并发场景，比如客户一秒钟调用了你这个接口几百次，甚至上千次，那么你就会一下子创建几百，甚至几千个线程**
 
-![07d3e0572d0bba878d57f8b313d9b4c4.png](assets/threadPoolPic/2.png)
+![07d3e0572d0bba878d57f8b313d9b4c4.png](/assets/threadPoolPic/2.png)
 >**可能会出现问题：**
 
-![a4754dea075347784979952d5ded5839.png](assets/threadPoolPic/3.png)
+![a4754dea075347784979952d5ded5839.png](/assets/threadPoolPic/3.png)
 >解决方案: **缓冲区:但是缓冲池有上界,可能会缓冲区满的情况.** 因此采用线程池的情况
 
-![ac582b59906feaf6428cdca04697024f.png](assets/threadPoolPic/4.png)
+![ac582b59906feaf6428cdca04697024f.png](/assets/threadPoolPic/4.png)
 >你可以**事先在线程池中创建几个线程，防止当高并发时,需要大量的线程被创建导致性能下降甚至宕机的问题**
 
 #### 主要架构
@@ -38,12 +38,12 @@
 
 #### 有界队列下的线程池主要过程：
 >1. 比如:你创建线程池的时候，有界队列设置的是最多存储500个任务。假如现在你的服务还没有处理完这些任务，corePoolSize线程都是忙碌状态，可是任务生产者又继续生产新的任务到队列中。
-    ![1eec57b781d2b27e105d890b991dadf9.png](assets/threadPoolPic/5.png)
+    ![1eec57b781d2b27e105d890b991dadf9.png](/assets/threadPoolPic/5.png)
 
 >2. 这个时候,就要看你的参数maxPoolSize的值是不是大于corePoolSize,**当maxPoolSize>corePoolSize时,** 线程池就会创建额外的线程来处理新的任务.
-    >![1](assets/threadPoolPic/6.png)
+    >![1](/assets/threadPoolPic/6.png)
 >3. 如果任务生产者还在狂发消息,现在额外线程也无法创建了,*这个时候任务就只能被reject掉了,* 线程池会告诉你队列已经满了，新任务只能丢弃了，并抛出异常.
-    ![ea8a0ac0a15d36a982c97d34d7c2ab35.png](eassets/threadPoolPic/7.png)
+    ![ea8a0ac0a15d36a982c97d34d7c2ab35.png](/assets/threadPoolPic/7.png)
 
 >4. 如果运行一段时间，内存队列中的任务都被消费完了，此时**超过corePoolSize创建的额外线程就会处于空闲状态，超过keepAliveTime时间后就会自动释放了。**
 
@@ -52,4 +52,4 @@
 
 #### 无界队列下的线程池的工作流程
 >假如任务生产者不停的**往内存队列中放任务**,而**你的线程消费任务的速度**比较慢,此时内存队列中积累的任务会越来越多,队列就会越来越大,内存就会飙升起来,**可能会造成OOM**
->![908a854ee33b7ee334f80cbdf7ffcd6d.png](assets/threadPoolPic/8.png)
+>![908a854ee33b7ee334f80cbdf7ffcd6d.png](/assets/threadPoolPic/8.png)
