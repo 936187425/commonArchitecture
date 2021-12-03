@@ -1,12 +1,15 @@
 package threadPool
+
+import "fmt"
+
 //线程池中的封装"线程"
 type worker struct{
-	jobChan chan job
+	jobChan chan Job
 	endChan chan bool //结束线程通道
 }
 //线程池中线程的"job",
-type job interface {
-	Do()
+type Job interface {
+	Do() int
 }
 
 //运行线程
@@ -17,6 +20,7 @@ func(self*worker)RunWorker(){
 			case job:=<-self.jobChan:
 				job.Do()
 			case <-self.endChan:
+				fmt.Println("worker end!")
 				return //结束该worker线程
 			}
 		}
@@ -28,7 +32,7 @@ func(self*worker)EndWorker(){
 }
 
 //创建线程
-func NewWorker(jobChan chan job)worker{
+func NewWorker(jobChan chan Job)worker{
 	return worker{
 		jobChan: jobChan,
 		endChan: make(chan bool),
